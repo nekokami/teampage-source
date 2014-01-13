@@ -60,8 +60,58 @@ __kinvy.com__ : 2012年2月推出的平台，主要面向移动应用的BaaS。�
 
 	这句话，让笔者感到很恐慌：因为我们都知道目前新浪云计算还处于Beta测试阶段，的确会出现一些bug。但是"很buggy"这个形容词，却不能让用户知道 __1. Bug究竟在哪儿。__ __2. 这个Bug有多严重。__ __3. 什么时候这个Bug会被修复。__ 看到这句话的多数开发者应该不会去使用目前的syncdb功能去同步本地的开发数据到线上的数据库。这句话，让这个功能变得毫无意义。笔者认为，这对于一个PaaS来说是有点不负责任的。相比之下，Heroku和Google Application Engine的文档中就没有出现过类似的注解。在类似Parse.com和Kinvy.com这样的新兴平台中，就更不会出现这样的注解了。
 
-*	__部署方式__ : 部署(Deploying)是一个很重要的环节，如何从开发环境(Development Environment)向生产环境(Production Envrionment)部署，这个过程与工程本身的版本控制有着很大的关联，如果部署过程的版本控制系统和开发者使用的版本控制系统有着比较大得差异，或者造成直接冲突，这对整个用户体验来说是一个重大的影响，成为用户向其他平台迁移的动力。比如说：Heroku的部署和版本控制是使用Git的，它的部署方式很简单：只需要在开发完成之后向本地代码库(Repo)中添加heroku的remote，然后`git push heroku master`，就能达到向生产环境部署的效果。同时，如果开发者想要在bitbucket.org或者github.com同样也保存代码，就会变得非常简单，他们只需要向本地开发的代码库添加不同的remote就可以达到目的，并且在推送的时候制定推送目标即可。
+*	__部署方式__ : 部署(Deploying)是一个很重要的环节，如何从开发环境(Development Environment)向生产环境(Production Envrionment)部署，这个过程与工程本身的版本控制有着很大的关联，如果部署过程的版本控制系统和开发者使用的版本控制系统有着比较大得差异，或者造成直接冲突，这对整个用户体验来说是一个重大的影响，成为用户向其他平台迁移的动力。比如说：Heroku的部署和版本控制是使用Git的，它的部署方式很简单：只需要在开发完成之后向本地代码库(Repo)中添加heroku的remote，然后`git push heroku master`，就能达到向生产环境部署的效果。同时，如果开发者想要在bitbucket.org或者github.com同样也保存代码，就会变得非常简单，他们只需要向本地开发的代码库添加不同的remote就可以达到目的，并且在推送的时候制定推送目标即可。同样的git系统并不会导致冲突，这也是为什么Heroku项目在Github.com能够始终保持旺盛人气的原因。Google Application采用一个独有的部署系统，但是它不影响其他的版本控制系统，Google Application Engine的命令行工具可以与任何其他版本控制系统共存。这样的部署系统比较可靠，同时具有跨操作系统的特性，比如Google Application Engine的appcfg.py就是一个能够在各种平台上进行部署的解决方案，在任何平台上只需要一个`appcfg.py --oauth2 -A <your-app-or-project-id> update <project-directory>`命令，就可以部署到Google Application Engine了。而新浪云计算和Heroku都需要安装git以及其他的依赖包，而对一些新手开发者而言，在windows上部署cygwin之类的程序的学习曲线太陡峭，令人望而却步。最后说一下新浪云计算的SVN部署系统。这个系统算是中规中矩，如果开发团队还在使用svn版本控制的话，也许没什么大问题。如果开发团队使用的是git的话，那就会有点麻烦。笔者不止一次听人抱怨要把每个文件夹下的.svn文件夹加入到.gitignore文件里面去，最后导致一些用户放弃使用新浪云计算。在这点上，百度云计算(BAE)就要支持svn,git,在线编辑和包上传更新四种方式。笔者认为，在这样的情况下，会造成更多的用户转向BAE。
+
+*	__开发环境__ : 一个PaaS为用户准备的本地开发环境也很重要。
+
+	*	*Google Application Engine:* 
+
+		从08年到现在，Google Application Engine都是使用appcfg.py来在本地虚拟在平台上的环境的，因为Google独有的GQL(Google Query Language)的原因，appcfg.py中虚拟了一个本地的KVDB，让用户的代码在线上和本地运行时有相同的效果。这种开发环境的好处在于它能够在任何平台上使用。Google在发布appcfg.py的同时，发布了一套桌面应用。虽然在09年之前只有Mac用户才有类似的界面，在09年之后Windows用户也同样可以通过点击图形界面上的按钮来操作应用的发布，删除，部署等等。
+
+	*	*Heroku*
+
+		总的来说，Heroku并不鼓励用户在Windows上进行开发。在互联网上铺天盖地的教程当中，很少有详细描述如何在windows下开发heroku的webApp，也很少在StackOverFlow.com看到类似的问题被解答。这是因为，尽管Heroku提供了它的ToolBelt, 开发者还是需要将其放置在一个类似于cygwin的虚拟环境中。而且即使这些虚拟环境都运行正常，在特定的语言环境下，有些依赖包会因为在windows下编译失败而无法运行。（当然，笔者认为在windows下面做PaaS上的web开发本身就是一件比较复杂的事情，因为必然会有一些依赖库在windows下编译失败。) 在*inx(unix, osx 或者linux发行版)下，heroku的开发环境表现完美。在安装完Toolbelt之后，基本上不用什么配置，就可以直接在本地进行开发和测试了。
+
+	*	*新浪云计算*
+
+		新浪云计算一直都在模仿Google Application Engine，不过它的本地开发环境又变得有点像Heroku -- 必须手动设置环境变量。在Google Application Engine的应用配置文件中，不会需要书写类似于下面的语句：
+
+			if env == "development":
+				'....'
+			elif env == "production":
+				'....'
+
+		不过在新浪云计算的配置文件中，却需要。这会让一些很有"洁癖"的开发者感到不满。同时，以后万一要把代码移植到别的地方去，修改这些配置文件也是相当头疼的事情。新浪云计算还会发生，本地测试通过，而部署之后不能运行的状况。当发生这样的情况的时候，如果不能在互联网上搜索到答案，那么唯一的方法只有找新浪云计算的客服了。
+
+	笔者认为，在2014年当下，国外的PaaS的开发，部署工作流程都做的不错，而国内的都做的不够好。开发者有时候会为了部署上的一个小bug而折腾好几天，造成效率的巨大降低。
+
+* __免费额度__ : 每一个开发者都希望PaaS供应商能够提供更多的免费额度来支持自己的开发，这里笔者将对比不同平台提供的免费额度。
+
+	*	*Google Application Engine:*
+
+		Google Application Engine的费率显示在[这个页面][4]上。在初始状态下，用户拥有5GB的Blob存储空间，1GB静态页面和代码空间，1GB数据空间以及每天50,000次的读写次数。在免费的Quota中建立一个自己的博客，或者是静态站点，绰绰有余。
+
+	*	*Heroku:*
+
+		Heroku提供的免费硬盘空间和存储空间与Google Application Engine相同。但是免费运行的Dyno数量和GAE的Instance略不相同，可以说Heroku更加小气一些，如果笔者在Heroku建立一个博客，并且这个博客变得小有人气(每天有超过100人访问)，那么笔者很可能需要为这个博客开始付钱。
+
+	*	*新浪云计算*
+
+		新浪云计算没有免费额度，他们只赠送开发者一些"云豆"，用来抵用开发者使用新浪云计算开发时使用的资源。在没有进行开发者认证和身份认证之前，用户需要为流向自己应用的所有流量、存储空间以及运算时付钱。	
+
+	*	*百度云计算*
+
+		百度的PaaS，将于2014年2月1日开始收费，其最贵的E套餐，折算下来一个月39元。提供1G内存和2G磁盘空间，不过这种雷同于SaaS的收费计量方式让人觉得很费解。
+
+	*	*Parse.com*
+
+		Parse.com的免费额度大的惊人，包括每个月100万次请求，和100次消息推送。这要比前面任何一种都要多得多，不过，因为BaaS不需要托管静态页面，它的成本要低得多。
+
+	*	*Kinvy.com*
+
+		Kinvy.com并没有标明免费额度中的API请求次数，不过同样作为BaaS，它提供的免费推送次数达到500次。笔者试图计算500次推送在GAE或者其他的传统PaaS平台上将换算成多少Instance Hour.
 
 [1]: http://en.wikipedia.org/wiki/Platform_as_a_service "PaaS (Platform as a Service)是云计算服务的一种，其主要提供计算平台以及配套解决方案，并将其作为一种服务向顾客贩卖。"
 [2]: https://github.com/sinacloud/sae-python-dev-guide/blob/master/docs/faq.rst "新浪云计算在Github上的文档repo"
 [3]: http://sae-python.readthedocs.org/en/latest/quickstart.html#syncdb "Warning： 本feature还在开发中，目前还很buggy。"
+[4]: https://developers.google.com/appengine/docs/quotas "Google Application Engine的费率"
